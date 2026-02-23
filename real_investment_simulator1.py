@@ -1,15 +1,37 @@
 import streamlit as st
+import numpy as np
+import matplotlib.pyplot as plt
 
-st.title("Investment Calculator")
+st.title("Real Market Investment Simulator")
 
-P = st.number_input("Initial Investment", value=10000.0)
-PMT = st.number_input("Monthly Contribution", value=500.0)
-annual_rate = st.number_input("Annual Return (%)", value=8.0) / 100
-years = st.number_input("Years", value=20)
+# Inputs
+initial = st.number_input("Initial Investment", value=10000.0)
+monthly = st.number_input("Monthly Contribution", value=500.0)
+years = st.number_input("Years", value=30)
+avg_return = st.number_input("Expected Average Annual Return (%)", value=7.0) / 100
+volatility = st.number_input("Market Volatility (%)", value=15.0) / 100
+simulations = 1000
 
-r = annual_rate / 12
-n = years * 12
+months = years * 12
+results = []
 
-FV = P * (1 + r)**n + PMT * (((1 + r)**n - 1) / r)
+for _ in range(simulations):
+    value = initial
+    for m in range(months):
+        monthly_return = np.random.normal(avg_return/12, volatility/np.sqrt(12))
+        value = value * (1 + monthly_return) + monthly
+    results.append(value)
 
-st.subheader(f"Future Value: ${FV:,.2f}")
+results = np.array(results)
+
+st.subheader("Results After Simulation")
+
+st.write(f"Median Outcome: ${np.median(results):,.0f}")
+st.write(f"Best 10% Outcome: ${np.percentile(results,90):,.0f}")
+st.write(f"Worst 10% Outcome: ${np.percentile(results,10):,.0f}")
+st.write(f"Probability of Ending Below Total Invested: {np.mean(results < (initial + monthly*months)) * 100:.1f}%")
+
+fig, ax = plt.subplots()
+ax.hist(results, bins=40)
+ax.set_title("Distribution of Outcomes")
+st.pyplot(fig)
