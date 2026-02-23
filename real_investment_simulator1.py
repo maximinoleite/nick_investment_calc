@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Nicholas Reality Investment Simulator", layout="wide")
-st.title("Reality-Based Investment Simulator")
+st.title("Nicholas Reality-Based Investment Simulator")
 st.caption("Shows ranges of outcomes, inflation impact, fees, taxes, crashes, and behavior mistakes.")
 
 # ----------------------------
